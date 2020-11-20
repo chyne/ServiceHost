@@ -1,8 +1,9 @@
-﻿namespace ServiceHost
+﻿namespace ServiceHostFramework
 {
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Main;
+    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
@@ -13,13 +14,9 @@
     {
         static void Main(string[] args)
         {
-            var builder = Host.CreateDefaultBuilder(args)
-                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-                //.UseWindowsService();
+            var builder = WebHost.CreateDefaultBuilder(args)
+                .ConfigureServices(services => services.AddAutofac())
+                .UseStartup<Startup>();
 
             var host = builder.Build();
             host.Run();
@@ -33,7 +30,7 @@
             services.AddOptions();
             services.AddHostedService<Service>();
             services.Configure<HostOptions>(options => { options.ShutdownTimeout = TimeSpan.FromSeconds(10); });
-            services.AddMvc(options => { options.EnableEndpointRouting = false; }).AddApplicationPart(typeof(StatusController).Assembly).AddControllersAsServices();
+            services.AddMvcCore(options => { options.EnableEndpointRouting = false; }).AddApplicationPart(typeof(StatusController).Assembly).AddControllersAsServices();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
