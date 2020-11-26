@@ -18,6 +18,10 @@
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddHostedService<Service>();
                 });
                 //.UseWindowsService();
 
@@ -31,7 +35,6 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.AddHostedService<Service>();
             services.Configure<HostOptions>(options => { options.ShutdownTimeout = TimeSpan.FromSeconds(10); });
             services.AddMvc(options => { options.EnableEndpointRouting = false; }).AddApplicationPart(typeof(StatusController).Assembly).AddControllersAsServices();
         }

@@ -15,7 +15,11 @@
         static void Main(string[] args)
         {
             var builder = WebHost.CreateDefaultBuilder(args)
-                .ConfigureServices(services => services.AddAutofac())
+                .ConfigureServices(services =>
+                {
+                    services.AddAutofac();
+                    services.AddHostedService<Service>();
+                })
                 .UseStartup<Startup>();
 
             var host = builder.Build();
@@ -28,7 +32,6 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.AddHostedService<Service>();
             services.Configure<HostOptions>(options => { options.ShutdownTimeout = TimeSpan.FromSeconds(10); });
             services.AddMvcCore(options => { options.EnableEndpointRouting = false; }).AddApplicationPart(typeof(StatusController).Assembly).AddControllersAsServices();
         }
